@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #C3E8BD;
+  font-family: 'Ubuntu', sans-serif;
+  color: #040403;
+}
+.container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin:auto;
+
+}
+
+h1 {
+  text-align: center;
+  margin: 30px 0;
+}
+
+label {
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  border-radius: 30px;
+  border: none;
+  padding: 5px;
+  margin: 10px 0;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 30px;
+  border: none;
+  padding: 5px;
+  margin: 10px 0;
+  text-indent: 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #8EB897;
+  font-weight: 500;
+  margin:50px auto;
+  transition: all 0.2s ease-in-out;
+
+
+  &:hover{
+    color: #5B7553;
+  }
+}
+
+button {
+  width: 100%;
+  height: 40px;
+  background-color: #8EB897;
+  border: none;
+  border-radius: 30px;
+  margin-top: 50px;
+  font-size: 20px;
+  font-family: 'Ubuntu', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #5B7553;
+  }
+}

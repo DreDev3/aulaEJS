@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de itens</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="/cadastro">Cadastrar item</a></li>
+      <li><a href="/relatorio">Gerar relatório</a></li>
+    </ul>
+  </nav>
+  <main class="container">
+  <h1>Itens Cadastrados: </h1>
+  <ul>
+    <% if (items.length === 0) { %>
+      <h3>Nenhum item cadastrado</h3>
+    <% } else { %>
+    <% items.forEach(item => { %>
+      <li>
+        <strong><%= item.nome %></strong>
+        
+        -
+
+        <%= item.descricao %>
+        <a href="/editar/<%= item.id %>" class="btn-editar">Editar</a>
+
+        <form action="/deletar/<%= item.id %>" method="post" style="display:inline;">
+          <button type="submit" onclick="return(confirm('Tem certeza que deseja deletar?'))" >Deletar</button>
+        </form>
+      </li>
+   <% }) %>
+   <%}%>
+  </ul>
+</main>
+</body>
+</html>

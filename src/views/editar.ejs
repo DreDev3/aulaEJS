@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/cadastro.css">
+  <title>Editar</title>
+</head>
+<body>
+  <main class="container">
+  <h1>Editar Itens</h1>
+  <form action="/editar/<%= item.id %>" method="post">
+    <label for="">Nome: </label>
+    <input type="text" name="nome" value="<%= item.nome %>" required>
+    <br>
+    <label for="">Descrição: </label>
+    <textarea name="descricao" rows="4" required><%= item.descricao %>
+    </textarea> <br>
+
+    <button  type="submit">Salvar alterações</button>
+  </form>
+  <a href="/">Voltar</a>
+</main>
+</body>
+</html>
