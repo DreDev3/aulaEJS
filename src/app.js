@@ -1,7 +1,8 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const pdfkit = require('pdfkit');
+
+const db = require('./models/connectDatabase');
 
 const app = express();
 const port = 3000;
@@ -15,14 +16,16 @@ app.use(express.static(path.join(__dirname, 'public'))); //configurando o caminh
 //middleware para forms (body-parsear)
 app.use(express.urlencoded({ extended: false }));
 
-//import mock de dados
-const dataFilePath = path.join(__dirname, 'mock', 'items.json');
-let items = require(dataFilePath);
-
 //Rotas da aplicação
 
 app.get('/', (req, res) => {
-  res.render('index', { items }); //renderizando a view index.ejs e passando os dados do mock
+  const sql = 'SELECT * FROM produtos'; //query para selecionar todos os itens
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).send('Erro ao buscar produtos no DB');
+
+    res.render('index', { items: results });
+  })
 });
 
 app.get('/cadastro', (req, res) => {
@@ -30,18 +33,12 @@ app.get('/cadastro', (req, res) => {
 });
 
 app.post('/cadastro', (req, res) => {
-  //Criar um objeto com os dados do form
-  const novoItem = {
-    id: Date.now(),
-    nome: req.body.nome,
-    descricao: req.body.descricao,
-  }
+  const { nome, descricao } = req.body; //pegando os dados do form
+  const sql = 'INSERT INTO produtos (nome, descricao) VALUES (?, ?)'; //query para inserir um novo item
 
-  //Adicionar o novo item ao array de objetos
-
-  items.push(novoItem);
-  //Salvar o array de objetos no arquivo JSON
-  fs.writeFileSync(dataFilePath, JSON.stringify(items, null, 2))
+  db.query(sql, [nome, descricao], (err, results) => {
+    if (err) return res.status(500).send('Erro ao cadastrar produto no DB');
+  })
 
   res.redirect('/'); //redirecionando para a rota principal
 });
