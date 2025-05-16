@@ -45,39 +45,39 @@ app.post('/cadastro', (req, res) => {
 
 app.get('/editar/:id', (req, res) => {
   const id = parseInt(req.params.id); //pegando o id do item a ser editado
-  const item = items.find(item => item.id === id); //procurando o item no array de objetos
+  const sql = 'SELECT * FROM produtos WHERE id = ?'; //query para selecionar o item a ser editado
 
-  if (!item) {
-    return res.status(404).send('Item não encontrado'); //se o item não for encontrado, retorna um erro 404
-  }
+  db.query(sql, [id], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(404).send('Item não encontrado'); //se o item não for encontrado, retorna um erro 404
+    }
+    res.render('editar', { item: results[0] }); //renderizando a view editar.ejs e passando o item encontrado
+  });
 
-  res.render('editar', { item }); //renderizando a view editar.ejs e passando o item encontrado
-});
+  app.post('/editar/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { nome, descricao } = req.body;
 
-app.post('/editar/:id', (req, res) => {
-  const id = parseInt(req.params.id); //pegando o id do item a ser editado
-  const itemIndex = items.findIndex(item => item.id === id); //procurando o index do item no array de objetos
+    const sql = 'UPDATE produtos SET nome = ?, descricao = ? WHERE id = ?';
 
-  if (itemIndex === -1) {
-    return res.status(404).send('Item não encontrado'); //se o item não for encontrado, retorna um erro 404
-  }
+    db.query(sql, [nome, descricao, id], (err) => {
+      if (err) return res.status(500).send('Erro ao atualizar produto no DB');
 
-  //Atualizando o item no array de objetos
-  items[itemIndex].nome = req.body.nome;
-  items[itemIndex].descricao = req.body.descricao;
+      res.redirect('/');
 
-  //Salvar o array de objetos no arquivo JSON
-  fs.writeFileSync(dataFilePath, JSON.stringify(items, null, 2))
-
-  res.redirect('/'); //redirecionando para a rota principal
+    })
+  })
 });
 
 app.post('/deletar/:id', (req, res) => {
-  const id = parseInt(req.params.id); //pegando o id do item a ser deletado
-  const item = items.filter(item => item.id !== id); //filtrando o array de objetos para remover o item com o id correspondente
+  const id = parseInt(req.params.id);
+  const sql = 'DELETE FROM produtos WHERE id = ?';
 
-  fs.writeFileSync(dataFilePath, JSON.stringify(item, null, 2)) //salvando o array de objetos no arquivo JSON
-  res.redirect('/');
+  db.query(sql, [id], (err) => {
+    if (err) return res.status(500).send('Erro ao deletar produto no DB');
+
+    res.redirect('/');
+  })
 });
 
 app.get('/relatorio', (req, res) => {
