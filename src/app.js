@@ -80,7 +80,7 @@ app.post('/deletar/:id', (req, res) => {
   })
 });
 
-app.get('/relatorio', (req, res) => {
+/* app.get('/relatorio', (req, res) => {
   const doc = new pdfkit();
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename=relatorio.pdf');
@@ -138,6 +138,73 @@ app.get('/relatorio', (req, res) => {
 
   // Finaliza o PDF
   doc.end();
+}) */
+
+app.get('/relatorio', (req, res) => {
+  const sql = 'SELECT * FROM produtos';
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).send('Erro ao gerar PDF');
+
+    const doc = new pdfkit();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=relatorio.pdf');
+
+    doc.pipe(res);
+
+    // Título do relatório
+    doc.fontSize(20).text('Relatório de Itens', { align: 'center' });
+    doc.moveDown(2);
+
+    // Definindo posições da tabela
+    const tableTop = 100;
+    const itemIdX = 50;
+    const itemNomeX = 150;
+    const itemDescricaoX = 350;
+
+    // Cabeçalho da tabela
+    doc
+      .fontSize(12)
+      .text('ID', itemIdX, tableTop)
+      .text('Nome', itemNomeX, tableTop)
+      .text('Descrição', itemDescricaoX, tableTop);
+
+    // Linha abaixo do cabeçalho
+    doc.moveTo(50, tableTop + 15)
+      .lineTo(550, tableTop + 15)
+      .stroke();
+
+    let y = tableTop + 25;
+
+    // Itens da tabela
+    results.forEach(item => {
+      // Escrevendo os campos
+      doc.fontSize(10)
+        .text(item.id.toString(), itemIdX, y)
+        .text(item.nome, itemNomeX, y)
+        .text(item.descricao, itemDescricaoX, y, { width: 180 }); // Definindo largura para a descrição
+
+      // Calcula a altura ocupada por cada campo
+      const idHeight = doc.heightOfString(item.id.toString(), { width: 100 });
+      const nomeHeight = doc.heightOfString(item.nome, { width: 180 });
+      const descricaoHeight = doc.heightOfString(item.descricao, { width: 180 });
+
+      // Pega a maior altura entre os três
+      const maxHeight = Math.max(idHeight, nomeHeight, descricaoHeight);
+
+      // Linha separadora após o item
+      doc.moveTo(50, y + maxHeight + 5)
+        .lineTo(550, y + maxHeight + 5)
+        .stroke();
+
+      // Atualiza a posição Y para o próximo item
+      y += maxHeight + 10; // Um pequeno espaço extra
+    });
+
+    // Finaliza o PDF
+    doc.end();
+
+  })
 })
 
 app.listen(port, () => {
